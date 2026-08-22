@@ -1,77 +1,29 @@
-const RAINY_CONDITIONS = [
-  "rain",
-  "drizzle",
-  "freezing_rain",
-  "showers",
-  "thunderstorm",
-];
-
-const LABELS = {
-  snow: "Snow Alert",
-  rain: "Rain Alert",
-  fog: "Fog Alert",
-  hot: "Hot Day",
-  cold: "Cold Day",
-  warm: "Warm Day",
-  sunny: "Sunny Day",
-  cloudy: "Cloudy Day",
-  pleasant: "Perfect Day",
-};
-
-function build(type, text) {
-  return { type, label: LABELS[type], text };
-}
-
 export function getWeatherRecommendation(weather) {
   if (!weather) return null;
 
-  const { condition, temperature } = weather;
-  console.log(weather);
-
-  if (condition === "snow") {
-    return build(
-      "snow",
-      "It's snowing. Wear warm clothes and take it slow outside.",
-    );
+  if (weather.condition === "snow") {
+    return { type: "snow", label: "Snow Alert", text: "It's snowing. Wear warm clothes and take it slow outside." };
   }
-  if (RAINY_CONDITIONS.includes(condition)) {
-    return build(
-      "rain",
-      "It's raining. Don't forget to take an umbrella with you.",
-    );
+  if (weather.condition === "rain" || weather.condition === "drizzle" || weather.condition === "freezing_rain" || weather.condition === "showers" || weather.condition === "thunderstorm") {
+    return { type: "rain", label: "Rain Alert", text: "It's raining. Don't forget to take an umbrella with you." };
   }
-  if (condition === "fog") {
-    return build(
-      "fog",
-      "It's foggy. Drive carefully and keep some distance from other vehicles.",
-    );
+  if (weather.condition === "fog") {
+    return { type: "fog", label: "Fog Alert", text: "It's foggy. Drive carefully and keep some distance from other vehicles." };
   }
-  if (temperature >= 32) {
-    return build("hot", "It's quite hot today. Take a water bottle with you.");
+  if (weather.temperature >= 32) {
+    return { type: "hot", label: "Hot Day", text: "It's quite hot today. Take a water bottle with you." };
   }
-  if (temperature <= 15) {
-    return build(
-      "cold",
-      "It's cold today. Wear warm clothes before heading out.",
-    );
+  if (weather.temperature <= 15) {
+    return { type: "cold", label: "Cold Day", text: "It's cold today. Wear warm clothes before heading out." };
   }
-  if (temperature >= 28) {
-    return build("warm", "It's warm today. Take some water with you.");
+  if (weather.temperature >= 28) {
+    return { type: "warm", label: "Warm Day", text: "It's warm today. Take some water with you." };
   }
-  if (condition === "clear") {
-    return build(
-      "sunny",
-      "Sunny skies ahead. Take water and consider carrying sunglasses.",
-    );
+  if (weather.condition === "clear") {
+    return { type: "sunny", label: "Sunny Day", text: "Sunny skies ahead. Take water and consider carrying sunglasses." };
   }
-  if (condition === "partly_cloudy" || condition === "cloudy") {
-    return build(
-      "cloudy",
-      "Mostly cloudy today. A light jacket might come in handy.",
-    );
+  if (weather.condition === "partly_cloudy" || weather.condition === "cloudy") {
+    return { type: "cloudy", label: "Cloudy Day", text: "Mostly cloudy today. A light jacket might come in handy." };
   }
-  return build(
-    "pleasant",
-    "The weather looks comfortable today. Enjoy your day!",
-  );
+  return { type: "pleasant", label: "Perfect Day", text: "The weather looks comfortable today. Enjoy your day!" };
 }
