@@ -3,12 +3,33 @@ import { Zap, Lightbulb, CircleCheck } from "lucide-react";
 import LocationModal from "../components/LocationModal";
 import WeatherIcon from "../components/WeatherIcon";
 
+/*
+  One of the three small cards under the button. Written once and reused three
+  times below, so the styling lives in a single place.
+*/
+function Feature({ icon: Icon, title, text }) {
+  return (
+    <div className="flex items-center gap-3 bg-white/85 border border-line rounded-[18px] px-[18px] py-[13px] shadow-sm-soft text-left">
+      <span className="inline-flex items-center justify-center w-[38px] h-[38px] rounded-[12px] bg-sky-soft text-sky-deep flex-shrink-0">
+        <Icon size={19} strokeWidth={2.25} />
+      </span>
+      <div className="flex flex-col">
+        <span className="text-[14px] font-bold">{title}</span>
+        <span className="text-[12.5px] text-slate">{text}</span>
+      </div>
+    </div>
+  );
+}
+
+// The landing page. Its only job is to open the location popup.
 export default function Home() {
+  // Controls whether the "Where are you today?" popup is visible.
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center px-6 py-16 max-sm:py-11 max-sm:px-[18px]">
       <section className="relative text-center max-w-[660px] z-10">
+        {/* Decorative background icons. Hidden on phones and ignored by screen readers. */}
         <div className="fixed inset-0 pointer-events-none -z-10 max-[640px]:hidden" aria-hidden="true">
           <span className="absolute top-[9%] left-[6%] opacity-55">
             <WeatherIcon icon="clear" size={130} color="#fbbf24" />
@@ -38,45 +59,23 @@ export default function Home() {
           your day — whether it's an umbrella, a water bottle, or warm clothes.
         </p>
 
+        {/* btn-primary is defined in src/index.css; the extra classes make it larger. */}
         <button
           type="button"
-          className="font-sans text-[17px] font-semibold tracking-wideish text-white border-none rounded-full px-[44px] py-[18px] cursor-pointer transition-all duration-150 bg-btn-primary shadow-btn-primary hover:bg-btn-primary-hover hover:shadow-btn-primary-hover hover:-translate-y-0.5"
+          className="btn-primary text-[17px] tracking-wideish px-[44px] py-[18px]"
           onClick={() => setModalOpen(true)}
         >
           Check My Weather
         </button>
 
         <div className="flex justify-center gap-[14px] flex-wrap mt-10 max-[480px]:flex-col max-[480px]:items-stretch">
-          <div className="flex items-center gap-3 bg-white/85 border border-line rounded-[18px] px-[18px] py-[13px] shadow-sm-soft text-left">
-            <span className="inline-flex items-center justify-center w-[38px] h-[38px] rounded-[12px] bg-sky-soft text-sky-deep flex-shrink-0">
-              <Zap size={19} strokeWidth={2.25} />
-            </span>
-            <div className="flex flex-col">
-              <span className="text-[14px] font-bold">Instant weather</span>
-              <span className="text-[12.5px] text-slate">Live conditions for any city</span>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 bg-white/85 border border-line rounded-[18px] px-[18px] py-[13px] shadow-sm-soft text-left">
-            <span className="inline-flex items-center justify-center w-[38px] h-[38px] rounded-[12px] bg-sky-soft text-sky-deep flex-shrink-0">
-              <Lightbulb size={19} strokeWidth={2.25} />
-            </span>
-            <div className="flex flex-col">
-              <span className="text-[14px] font-bold">Smart tips</span>
-              <span className="text-[12.5px] text-slate">A suggestion for your day</span>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 bg-white/85 border border-line rounded-[18px] px-[18px] py-[13px] shadow-sm-soft text-left">
-            <span className="inline-flex items-center justify-center w-[38px] h-[38px] rounded-[12px] bg-sky-soft text-sky-deep flex-shrink-0">
-              <CircleCheck size={19} strokeWidth={2.25} />
-            </span>
-            <div className="flex flex-col">
-              <span className="text-[14px] font-bold">No signup</span>
-              <span className="text-[12.5px] text-slate">Free and always available</span>
-            </div>
-          </div>
+          <Feature icon={Zap} title="Instant weather" text="Live conditions for any city" />
+          <Feature icon={Lightbulb} title="Smart tips" text="A suggestion for your day" />
+          <Feature icon={CircleCheck} title="No signup" text="Free and always available" />
         </div>
       </section>
 
+      {/* The popup only exists in the page while modalOpen is true. */}
       {modalOpen && <LocationModal onClose={() => setModalOpen(false)} />}
     </main>
   );

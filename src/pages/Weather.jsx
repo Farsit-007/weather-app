@@ -5,17 +5,32 @@ import RecommendationCard from "../components/RecommendationCard";
 import { getWeatherByCoordinates } from "../services/weatherService";
 import { getWeatherRecommendation } from "../utils/weatherRecommendation";
 
+/*
+  The result page.
+
+  The chosen place is passed here by LocationModal through the router:
+  navigate("/weather", { state: { location } }). We read it back with
+  useLocation() and then ask the API for that location's weather.
+*/
 export default function Weather() {
   const { state } = useLocation();
   const location = state?.location;
 
+  // The weather data from the API, or null while we don't have it yet.
   const [weather, setWeather] = useState(null);
+  // True while the request is running, so we can show the loading message.
   const [loading, setLoading] = useState(Boolean(location));
+  // "" = no error, "no_location" = user came here directly, "api" = request failed.
   const [error, setError] = useState(location ? "" : "no_location");
 
   useEffect(() => {
+    // Someone opened /weather directly without picking a place first.
     if (!location) return;
+
+    // If the user leaves the page before the request finishes, we must not call
+    // setState any more. `cancelled` is flipped by the cleanup function below.
     let cancelled = false;
+
     getWeatherByCoordinates(location.lat, location.lon)
       .then((data) => {
         if (!cancelled) setWeather(data);
@@ -26,6 +41,7 @@ export default function Weather() {
       .finally(() => {
         if (!cancelled) setLoading(false);
       });
+
     return () => {
       cancelled = true;
     };
@@ -40,45 +56,47 @@ export default function Weather() {
         ← Back to home
       </Link>
 
+      {/* Loading: a spinning circle and a short message. */}
       {loading && (
-        <div className="max-w-[520px] w-full text-center py-10 px-[30px]">
-          <p className="text-[16px] text-slate mb-0 m-0">Getting your weather...</p>
+        <div className="panel">
+          <span className="inline-block w-9 h-9 rounded-full border-4 border-sky-light border-t-sky animate-spin" />
+          <p className="text-[16px] text-slate mt-4 mb-0">Getting your weather...</p>
         </div>
       )}
 
+      {/* No location: the user opened this page without choosing a place. */}
       {!loading && error === "no_location" && (
-        <div className="max-w-[520px] w-full text-center bg-white border border-line rounded-card shadow-md-soft py-[46px] px-9">
+        <div className="panel">
           <h2 className="text-[20px] font-bold mb-[10px] m-0">We don't know where you are yet</h2>
           <p className="text-[16px] text-slate mb-6 m-0">
             Pick a location on the home page to see your weather.
           </p>
-          <Link
-            to="/"
-            className="inline-block font-sans text-[15px] font-semibold border-none rounded-full px-7 py-[13px] cursor-pointer transition-all duration-150 no-underline text-white bg-btn-primary shadow-btn-primary hover:bg-btn-primary-hover hover:shadow-btn-primary-hover hover:-translate-y-0.5"
-          >
+          <Link to="/" className="btn-primary">
             Pick a location
           </Link>
         </div>
       )}
 
+      {/* The request failed, or the API sent no weather data. */}
       {!loading && error === "api" && (
-        <div className="max-w-[520px] w-full text-center bg-white border border-line rounded-card shadow-md-soft py-[46px] px-9">
-          <h2 className="text-[20px] font-bold mb-[10px] m-0">Something went wrong while getting the weather.</h2>
-          <Link
-            to="/"
-            className="inline-block font-sans text-[15px] font-semibold border-none rounded-full px-7 py-[13px] cursor-pointer transition-all duration-150 no-underline text-white bg-btn-primary shadow-btn-primary hover:bg-btn-primary-hover hover:shadow-btn-primary-hover hover:-translate-y-0.5"
-          >
+        <div className="panel">
+          <h2 className="text-[20px] font-bold mb-[10px] m-0">
+            Something went wrong while getting the weather.
+          </h2>
+          <p className="text-[16px] text-slate mb-6 m-0">
+            Please check your internet connection and try again.
+          </p>
+          <Link to="/" className="btn-primary">
             Try again
           </Link>
         </div>
       )}
 
+      {/* Everything worked: show the weather and the suggestion. */}
       {!loading && !error && weather && (
         <>
           <WeatherCard locationName={location.name} weather={weather} />
-          <RecommendationCard
-            recommendation={getWeatherRecommendation(weather)}
-          />
+          <RecommendationCard recommendation={getWeatherRecommendation(weather)} />
         </>
       )}
     </main>

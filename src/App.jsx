@@ -2,6 +2,12 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "./pages/Home";
 import Weather from "./pages/Weather";
 
+/*
+  The app has just two pages:
+
+    /         Home    - the landing page with the "Check My Weather" button
+    /weather  Weather - shows the weather and the suggestion
+*/
 const router = createBrowserRouter([
   { path: "/", element: <Home /> },
   { path: "/weather", element: <Weather /> },

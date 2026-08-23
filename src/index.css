@@ -4,6 +4,7 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Page-wide defaults: fonts, text colour and the soft background gradient. */
 @layer base {
   html,
   body {
@@ -29,6 +30,48 @@
 
   ::selection {
     background: #cfe3ff;
+  }
+}
+
+/*
+  Small set of shared classes.
+
+  The buttons and cards look the same on every page, so their Tailwind classes
+  are written once here instead of being copy-pasted into each component. In the
+  JSX you then just write className="btn-primary".
+
+  You can still add normal Tailwind classes on top to tweak one instance,
+  e.g. <button className="btn-primary text-[17px]"> makes that button bigger.
+*/
+@layer components {
+  .btn-primary {
+    @apply inline-block font-sans text-[15px] font-semibold text-white no-underline text-center;
+    @apply border-none rounded-full px-7 py-[13px] cursor-pointer transition-all duration-150;
+    @apply bg-btn-primary shadow-btn-primary;
+  }
+
+  .btn-primary:hover {
+    @apply bg-btn-primary-hover shadow-btn-primary-hover -translate-y-0.5;
+  }
+
+  .btn-secondary {
+    @apply inline-block font-sans text-[15px] font-semibold text-sky-deep no-underline text-center;
+    @apply bg-white border-[1.5px] border-sky-light rounded-full px-7 py-[13px] cursor-pointer transition-all duration-150;
+  }
+
+  .btn-secondary:hover {
+    @apply bg-sky-soft border-sky;
+  }
+
+  /* Greyed out look while a request is running. */
+  .btn-primary:disabled,
+  .btn-secondary:disabled {
+    @apply opacity-60 cursor-not-allowed translate-y-0;
+  }
+
+  /* White rounded box used for the loading, empty and error messages. */
+  .panel {
+    @apply w-full max-w-[520px] text-center bg-white border border-line rounded-card shadow-md-soft py-[46px] px-9;
   }
 }
 
