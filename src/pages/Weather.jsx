@@ -32,33 +32,42 @@ export default function Weather() {
   }, [location]);
 
   return (
-    <main className="page weather-page">
-      <Link to="/" className="back-link">
+    <main className="min-h-screen flex flex-col items-center justify-start pt-11 px-6 py-16 max-sm:py-11 max-sm:px-[18px]">
+      <Link
+        to="/"
+        className="self-start text-[14px] font-semibold text-sky-deep no-underline bg-white border border-line rounded-full px-5 py-[10px] shadow-sm-soft mb-[26px] hover:bg-sky-soft hover:border-sky-light transition-colors"
+      >
         ← Back to home
       </Link>
 
       {loading && (
-        <div className="state-block">
-          <p className="state-text">Getting your weather...</p>
+        <div className="max-w-[520px] w-full text-center py-10 px-[30px]">
+          <p className="text-[16px] text-slate mb-0 m-0">Getting your weather...</p>
         </div>
       )}
 
       {!loading && error === "no_location" && (
-        <div className="state-block card">
-          <h2 className="state-title">We don't know where you are yet</h2>
-          <p className="state-text">
+        <div className="max-w-[520px] w-full text-center bg-white border border-line rounded-card shadow-md-soft py-[46px] px-9">
+          <h2 className="text-[20px] font-bold mb-[10px] m-0">We don't know where you are yet</h2>
+          <p className="text-[16px] text-slate mb-6 m-0">
             Pick a location on the home page to see your weather.
           </p>
-          <Link to="/" className="btn btn-primary">
+          <Link
+            to="/"
+            className="inline-block font-sans text-[15px] font-semibold border-none rounded-full px-7 py-[13px] cursor-pointer transition-all duration-150 no-underline text-white bg-btn-primary shadow-btn-primary hover:bg-btn-primary-hover hover:shadow-btn-primary-hover hover:-translate-y-0.5"
+          >
             Pick a location
           </Link>
         </div>
       )}
 
       {!loading && error === "api" && (
-        <div className="state-block card">
-          <h2 className="state-title">Something went wrong while getting the weather.</h2>
-          <Link to="/" className="btn btn-primary">
+        <div className="max-w-[520px] w-full text-center bg-white border border-line rounded-card shadow-md-soft py-[46px] px-9">
+          <h2 className="text-[20px] font-bold mb-[10px] m-0">Something went wrong while getting the weather.</h2>
+          <Link
+            to="/"
+            className="inline-block font-sans text-[15px] font-semibold border-none rounded-full px-7 py-[13px] cursor-pointer transition-all duration-150 no-underline text-white bg-btn-primary shadow-btn-primary hover:bg-btn-primary-hover hover:shadow-btn-primary-hover hover:-translate-y-0.5"
+          >
             Try again
           </Link>
         </div>

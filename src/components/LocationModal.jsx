@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { MapPin, X } from "lucide-react";
 import { getCoordinatesByCity } from "../services/weatherService";
 
 export default function LocationModal({ onClose }) {
@@ -58,73 +59,74 @@ export default function LocationModal({ onClose }) {
   };
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
+    <div
+      className="fixed inset-0 bg-[rgba(15,30,60,0.55)] flex items-center justify-center p-6 z-50"
+      onClick={onClose}
+    >
       <div
-        className="modal-card"
+        className="relative w-full max-w-[450px] bg-white rounded-[28px] shadow-lg-soft px-8 py-9 pb-[30px]"
         role="dialog"
         aria-modal="true"
         onClick={(event) => event.stopPropagation()}
       >
         <button
           type="button"
-          className="modal-close"
+          className="absolute top-4 right-4 w-[34px] h-[34px] border-none rounded-full bg-sky-soft text-navy-soft text-[20px] leading-none cursor-pointer hover:bg-[#d9e8fb] flex items-center justify-center"
           onClick={onClose}
           aria-label="Close"
         >
-          ×
+          <X size={18} strokeWidth={2.25} />
         </button>
 
-        <div className="modal-icon">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-            <circle cx="12" cy="10" r="3" />
-          </svg>
+        <div className="flex items-center justify-center w-[58px] h-[58px] rounded-[18px] bg-modal-icon text-white shadow-modal-icon mb-5">
+          <MapPin size={26} strokeWidth={2.25} />
         </div>
 
-        <h2 className="modal-title">Where are you today?</h2>
-        <p className="modal-subtitle">
+        <h2 className="font-display text-[24px] font-bold mb-2 m-0">Where are you today?</h2>
+        <p className="text-[14px] text-slate mb-6 m-0">
           Pick a location and we'll check the weather for you.
         </p>
 
         <form onSubmit={handleSearch} className="modal-form">
-          <label className="modal-label" htmlFor="city-input">
+          <label className="block text-[13px] font-semibold text-navy-soft mb-2" htmlFor="city-input">
             Enter city name
           </label>
           <input
             id="city-input"
             type="text"
-            className="modal-input"
+            className="w-full font-sans text-[15px] text-navy bg-[#f4f8fd] border-[1.5px] border-line rounded-[14px] px-4 py-[13px] mb-[14px] outline-none focus:bg-white focus:border-sky focus:shadow-focus-sky"
             placeholder="e.g. Chattogram"
             value={city}
             onChange={(event) => setCity(event.target.value)}
             disabled={loading}
           />
-          <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
+          <button
+            type="submit"
+            className="block w-full font-sans text-[15px] font-semibold border-none rounded-full px-7 py-[13px] cursor-pointer transition-all duration-150 text-white bg-btn-primary shadow-btn-primary hover:bg-btn-primary-hover hover:shadow-btn-primary-hover hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed"
+            disabled={loading}
+          >
             {loading ? "Getting your weather..." : "Get Weather"}
           </button>
         </form>
 
-        <div className="modal-divider">
+        <div className="flex items-center gap-[14px] my-5 text-slate-light text-[13px] font-semibold before:content-[''] before:flex-1 before:h-px before:bg-line after:content-[''] after:flex-1 after:h-px after:bg-line">
           <span>or</span>
         </div>
 
         <button
           type="button"
-          className="btn btn-outline btn-block"
+          className="block w-full font-sans text-[15px] font-semibold border-[1.5px] border-[#c8dcf8] rounded-full px-7 py-[13px] cursor-pointer transition-all duration-150 text-sky-deep bg-white hover:bg-sky-soft hover:border-sky disabled:opacity-60 disabled:cursor-not-allowed"
           onClick={handleUseMyLocation}
           disabled={loading}
         >
           {loading ? "Getting your weather..." : "Use My Location"}
         </button>
 
-        {error && <p className="modal-error">{error}</p>}
+        {error && (
+          <p className="text-[14px] font-medium text-danger bg-[#fef2f2] border border-[#fecaca] rounded-[12px] px-[14px] py-[11px] mt-[18px] mb-0">
+            {error}
+          </p>
+        )}
       </div>
     </div>
   );

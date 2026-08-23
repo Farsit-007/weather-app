@@ -1,3 +1,4 @@
+import { Thermometer, Droplet, Wind } from "lucide-react";
 import WeatherIcon from "./WeatherIcon";
 
 const CARD_GRADIENTS = {
@@ -24,65 +25,52 @@ const ICON_COLORS = {
   unknown: "#64748b",
 };
 
-function StatIcon({ name }) {
-  const icons = {
-    thermometer: <path d="M14 14.76V5a2 2 0 1 0-4 0v9.76a4 4 0 1 0 4 0z" />,
-    droplet: <path d="M12 2.7s6 6.1 6 10.3a6 6 0 1 1-12 0c0-4.2 6-10.3 6-10.3z" />,
-    wind: (
-      <path d="M9.6 4.6A2 2 0 1 1 11 8H2M12.6 19.4A2 2 0 1 0 14 16H2M17.5 8a2.5 2.5 0 1 1 2 4H2" />
-    ),
-  };
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      {icons[name]}
-    </svg>
-  );
-}
-
 export default function WeatherCard({ locationName, weather }) {
   const gradient = CARD_GRADIENTS[weather.icon] || CARD_GRADIENTS.unknown;
   const iconColor = ICON_COLORS[weather.icon] || "#64748b";
 
   return (
-    <section className="card weather-card" style={{ background: gradient }}>
-      <div className="weather-card-head">
-        <span className="location-label">Today's Weather</span>
-        <h2 className="location-name">{locationName}</h2>
+    <section
+      className="bg-white border border-white/80 rounded-card shadow-lg-soft w-full max-w-[520px] pt-[34px] px-[34px] pb-3 max-[480px]:py-7 max-[480px]:px-5 max-[480px]:pb-2"
+      style={{ background: gradient }}
+    >
+      <div className="text-center">
+        <span className="inline-block text-[12px] font-bold tracking-widelabel uppercase text-sky-deep bg-white/75 rounded-full px-4 py-[6px]">
+          Today's Weather
+        </span>
+        <h2 className="font-display text-[26px] font-bold mt-3 mb-0 m-0">{locationName}</h2>
       </div>
 
-      <div className="weather-card-main">
-        <span className="weather-icon-ring">
+      <div className="flex items-center justify-center gap-7 pt-[26px] pb-[10px] max-[480px]:flex-col max-[480px]:gap-4 max-[480px]:text-center">
+        <span className="inline-flex items-center justify-center w-[132px] h-[132px] rounded-full bg-white/75 shadow-md-soft flex-shrink-0">
           <WeatherIcon icon={weather.icon} size={92} color={iconColor} />
         </span>
         <div className="temperature-block">
-          <span className="temperature">{weather.temperature}°</span>
-          <span className="condition">{weather.conditionLabel}</span>
-          <span className="description">{weather.description}</span>
+          <span className="block font-display text-[80px] max-[480px]:!text-[64px] font-extrabold tracking-tightx leading-none text-orange-deep">
+            {weather.temperature}°
+          </span>
+          <span className="block font-display text-[19px] font-bold mt-[10px]">
+            {weather.conditionLabel}
+          </span>
+          <span className="block text-[14px] text-slate mt-[3px]">{weather.description}</span>
         </div>
       </div>
 
-      <div className="weather-stats">
-        <div className="stat">
-          <StatIcon name="thermometer" />
-          <span className="stat-label">Feels like</span>
-          <span className="stat-value">{weather.feelsLike}°C</span>
+      <div className="flex mt-[26px] bg-white/65 border border-white/70 rounded-[18px] overflow-hidden backdrop-blur-md max-[480px]:flex-col">
+        <div className="flex-1 text-center px-2 py-[15px] max-[480px]:flex max-[480px]:items-center max-[480px]:justify-between max-[480px]:px-[18px] max-[480px]:py-3 border-r border-white/90 last:border-r-0 max-[480px]:border-r-0 max-[480px]:border-t max-[480px]:border-white/90 max-[480px]:first:border-t-0">
+          <Thermometer size={19} strokeWidth={2.25} className="text-sky-deep mb-[6px] max-[480px]:m-0 max-[480px]:order-first inline-block" />
+          <span className="block text-[11.5px] font-semibold text-slate mb-1 max-[480px]:m-0 max-[480px]:ml-auto max-[480px]:px-3">Feels like</span>
+          <span className="block text-[15.5px] max-[480px]:!text-[15px] font-bold">{weather.feelsLike}°C</span>
         </div>
-        <div className="stat">
-          <StatIcon name="droplet" />
-          <span className="stat-label">Humidity</span>
-          <span className="stat-value">{weather.humidity}%</span>
+        <div className="flex-1 text-center px-2 py-[15px] max-[480px]:flex max-[480px]:items-center max-[480px]:justify-between max-[480px]:px-[18px] max-[480px]:py-3 border-r border-white/90 last:border-r-0 max-[480px]:border-r-0 max-[480px]:border-t max-[480px]:border-white/90 max-[480px]:first:border-t-0">
+          <Droplet size={19} strokeWidth={2.25} className="text-sky-deep mb-[6px] max-[480px]:m-0 max-[480px]:order-first inline-block" />
+          <span className="block text-[11.5px] font-semibold text-slate mb-1 max-[480px]:m-0 max-[480px]:ml-auto max-[480px]:px-3">Humidity</span>
+          <span className="block text-[15.5px] max-[480px]:!text-[15px] font-bold">{weather.humidity}%</span>
         </div>
-        <div className="stat">
-          <StatIcon name="wind" />
-          <span className="stat-label">Wind speed</span>
-          <span className="stat-value">{weather.windSpeed} km/h</span>
+        <div className="flex-1 text-center px-2 py-[15px] max-[480px]:flex max-[480px]:items-center max-[480px]:justify-between max-[480px]:px-[18px] max-[480px]:py-3 max-[480px]:border-t max-[480px]:border-white/90">
+          <Wind size={19} strokeWidth={2.25} className="text-sky-deep mb-[6px] max-[480px]:m-0 max-[480px]:order-first inline-block" />
+          <span className="block text-[11.5px] font-semibold text-slate mb-1 max-[480px]:m-0 max-[480px]:ml-auto max-[480px]:px-3">Wind speed</span>
+          <span className="block text-[15.5px] max-[480px]:!text-[15px] font-bold">{weather.windSpeed} km/h</span>
         </div>
       </div>
     </section>
