@@ -15,11 +15,15 @@
   body {
     font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     color: #13223f;
+    /* Four soft colour clouds on a near-white page. `fixed` keeps them still
+       while the page scrolls, so the background feels like a sky behind it. */
     background:
-      radial-gradient(1000px 460px at 85% -10%, #d9eaff 0%, transparent 60%),
-      radial-gradient(800px 420px at -8% 25%, #e0ecff 0%, transparent 52%),
-      radial-gradient(900px 480px at 110% 105%, #fdf0cf 0%, transparent 55%),
-      #f8fbff;
+      radial-gradient(1100px 520px at 88% -12%, #d7e9ff 0%, transparent 62%),
+      radial-gradient(900px 460px at -10% 18%, #e3e9ff 0%, transparent 58%),
+      radial-gradient(1000px 520px at 112% 108%, #ffeecd 0%, transparent 58%),
+      radial-gradient(760px 420px at 12% 108%, #dff5e9 0%, transparent 55%),
+      #f7fbff;
+    background-attachment: fixed;
   }
 
   h1,
@@ -45,8 +49,8 @@
 */
 @layer components {
   .btn-primary {
-    @apply inline-block font-sans text-[15px] font-semibold text-white no-underline text-center;
-    @apply border-none rounded-full px-7 py-[13px] cursor-pointer transition-all duration-150;
+    @apply inline-flex items-center justify-center gap-2 font-sans text-[15px] font-semibold text-white no-underline text-center;
+    @apply border-none rounded-full px-7 py-[13px] cursor-pointer transition-all duration-200;
     @apply bg-btn-primary shadow-btn-primary;
   }
 
@@ -55,18 +59,40 @@
   }
 
   .btn-secondary {
-    @apply inline-block font-sans text-[15px] font-semibold text-sky-deep no-underline text-center;
-    @apply bg-white border-[1.5px] border-sky-light rounded-full px-7 py-[13px] cursor-pointer transition-all duration-150;
+    @apply inline-flex items-center justify-center gap-2 font-sans text-[15px] font-semibold text-sky-deep no-underline text-center;
+    @apply bg-white border-[1.5px] border-sky-light rounded-full px-7 py-[13px] cursor-pointer transition-all duration-200;
   }
 
   .btn-secondary:hover {
-    @apply bg-sky-soft border-sky;
+    @apply bg-sky-soft border-sky -translate-y-0.5;
   }
 
   /* Greyed out look while a request is running. */
   .btn-primary:disabled,
   .btn-secondary:disabled {
     @apply opacity-60 cursor-not-allowed translate-y-0;
+  }
+
+  /* Small pale button used for the links in the page headers. */
+  .btn-ghost {
+    @apply inline-flex items-center gap-2 text-[14px] font-semibold text-sky-deep no-underline cursor-pointer;
+    @apply bg-white/80 backdrop-blur-md border border-line rounded-full px-[18px] py-[10px] shadow-sm-soft;
+    @apply transition-all duration-200 hover:bg-sky-soft hover:border-sky-light hover:-translate-y-0.5;
+  }
+
+  /* Frosted white surface, used by the cards that sit on the background. */
+  .glass {
+    @apply bg-white/80 backdrop-blur-xl border border-white/70;
+  }
+
+  /* The white box used by the weather card and the suggestion card. */
+  .card {
+    @apply bg-white border border-line rounded-card shadow-md-soft;
+  }
+
+  /* Small uppercase label, e.g. "Today's weather". */
+  .pill {
+    @apply inline-flex items-center gap-2 text-[12px] font-bold uppercase tracking-widelabel rounded-full px-4 py-[6px];
   }
 
   /* White rounded box used for the loading, empty and error messages. */
@@ -81,5 +107,74 @@
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+  }
+}
+
+/*
+  Movement.
+
+  The weather pictures are Lottie animations (see components/WeatherLottie.jsx),
+  so the only things written by hand are these: the slow float of the drawings
+  in the background, and the short entrance animations that let the page appear
+  instead of snapping into place.
+
+  Stagger an entrance with Tailwind's arbitrary properties, e.g.
+  className="animate-rise [animation-delay:120ms]".
+*/
+@keyframes sky-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-14px); }
+}
+
+@keyframes sky-rise {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes sky-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes sky-pop {
+  from { opacity: 0; transform: translateY(16px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+
+/*
+  These two are written as separate properties instead of the short
+  `animation:` form on purpose. The short form also sets the delay, which would
+  overwrite the [animation-delay:...] class used to stagger them.
+*/
+.anim-float {
+  animation-name: sky-float;
+  animation-duration: 7s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+/* `both` keeps the element invisible during its delay, not just after it. */
+.animate-rise {
+  animation-name: sky-rise;
+  animation-duration: 0.6s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  animation-fill-mode: both;
+}
+
+.animate-fade-in {
+  animation: sky-fade 0.2s ease-out both;
+}
+
+.animate-pop-in {
+  animation: sky-pop 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Some people prefer no movement on screen, so everything appears at once. */
+@media (prefers-reduced-motion: reduce) {
+  .anim-float,
+  .animate-rise,
+  .animate-fade-in,
+  .animate-pop-in {
+    animation: none;
   }
 }

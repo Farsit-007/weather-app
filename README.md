@@ -21,14 +21,16 @@ simple suggestion for your day: take an umbrella, carry water, wear warm clothes
 | Vite | Dev server and build tool |
 | React Router | Switches between the two pages |
 | Tailwind CSS | Styling |
-| lucide-react | The weather and interface icons |
+| lucide-react | The interface icons |
+| lottie-react | Plays the animated weather icons |
+| Meteocons | The Lottie animation files themselves (MIT licensed) |
 | Open-Meteo API | The weather data (free, no API key) |
 
 **Main features**
 
-- Search any city by name, or use your current location
+- Search any city by name, tap a popular one, or use your current location
 - Current temperature, "feels like", humidity and wind speed
-- Weather condition shown as text and as an icon
+- Weather condition shown as text and as a looping Lottie animation
 - A smart suggestion for the day
 - Loading and error messages
 - Works on phones and on desktop
@@ -179,7 +181,7 @@ Each entry holds the four things the interface needs:
 | `condition` | A simple group name, used to pick the suggestion |
 | `description` | The exact meaning of the code, shown as small text |
 | `label` | A short friendly headline, shown under the temperature |
-| `icon` | Which icon to draw |
+| `icon` | Which animation to play |
 
 Codes are grouped like this:
 
@@ -207,35 +209,106 @@ components never have to touch raw API fields:
   feelsLike: 33,            // rounded apparent_temperature
   humidity: 82,             // relative_humidity_2m
   windSpeed: 20,            // rounded wind_speed_10m
+  updatedAt: "14:32",       // local time of the measurement
   condition: "drizzle",     // from WMO_CODES
   description: "Dense drizzle",
   conditionLabel: "Drizzle",
-  icon: "rain"              // WeatherIcon turns this into a picture
+  icon: "rain"              // picks the scene, the colours and the icon
 }
 ```
 
 One extra rule: when the condition is clear and `is_day` is `0`, the icon
 becomes `clear_night` so a moon is drawn instead of a sun.
 
+## The Weather Page Layout
+
+From 1024 px upwards the weather page is split into two columns:
+
+```text
+┌───────────────────────────┬───────────────────────────┐
+│ WeatherCard               │ WeatherScene              │
+│  location, temperature,   │  animated sky picture     │
+│  feels like / humidity /  │  + condition and          │
+│  wind                     │    "feels like"           │
+├───────────────────────────┤                           │
+│ RecommendationCard        │                           │
+│  the one-line suggestion  │                           │
+└───────────────────────────┴───────────────────────────┘
+```
+
+Below that width the grid falls back to one column and the animation moves to
+the top, because it is the nicest thing to see first on a phone.
+
+### The animations
+
+The weather is shown with real **Lottie** animations instead of a static icon:
+a spinning sun, drifting clouds, falling rain, tumbling snow, rolling fog or a
+thunderstorm with a flashing bolt.
+
+The animation files come from [Meteocons](https://github.com/basmilius/meteocons)
+by Bas Milius — 475+ hand-crafted weather animations, MIT licensed. The ones
+this app uses are copied into `public/animations`, so nothing is fetched from
+someone else's server and the app also works offline:
+
+```text
+public/animations/
+├── weather/     the sky animations, one file per weather.icon value
+│   ├── clear.json          clear_night.json     partly_cloudy.json
+│   ├── cloudy.json         fog.json             rain.json
+│   └── snow.json           storm.json
+├── advice/      the suggestion animations, one file per recommendation type
+│   ├── hot.json    warm.json    cold.json    sunny.json   rain.json
+│   └── snow.json   fog.json     cloudy.json  pleasant.json
+└── LICENSE.txt  the Meteocons licence notice
+```
+
+Naming the files after the values the app already has is the whole trick: there
+is **no table mapping weather to pictures** anywhere in the code. The component
+builds the path and `lottie-react` plays it:
+
+```jsx
+// components/WeatherLottie.jsx
+<LottieLight src={`/animations/${kind}/${name}.json`} className={className} autoplay loop />
+
+// components/WeatherScene.jsx — the sky animation
+<WeatherLottie kind="weather" name={weather.icon} className="w-[260px] h-[260px]" />
+
+// components/RecommendationCard.jsx — the umbrella, the thermometer, ...
+<WeatherLottie kind="advice" name={recommendation.type} className="w-[46px] h-[46px]" />
+```
+
+`LottieLight` is the small build of the player: SVG only and no expression
+engine, which keeps the bundle down. Each animation is a small JSON file
+(2–28 KB) loaded only when it is actually shown.
+
+The colours around the animation come from `src/utils/weatherTheme.js`, which
+holds one theme per icon name (sky gradient, accent colour, text colours).
+`WeatherCard` reads the same file, so the temperature on the left always matches
+the picture on the right.
+
 ## Project Structure
 
 ```text
+public/
+└── animations/                  the Lottie animation files (see above)
 src/
 ├── components/
 │   ├── LocationModal.jsx        popup where the user picks a location
-│   ├── WeatherCard.jsx          big card with temperature and stats
+│   ├── WeatherCard.jsx          card with temperature and stats
+│   ├── WeatherScene.jsx         the animated picture of the sky
 │   ├── RecommendationCard.jsx   the suggestion card
-│   └── WeatherIcon.jsx          icon name -> icon picture
+│   └── WeatherLottie.jsx        name -> Lottie animation
 ├── pages/
 │   ├── Home.jsx                 landing page with the main button
-│   └── Weather.jsx              result page (loading / error / weather)
+│   └── Weather.jsx              result page, two columns (loading / error / weather)
 ├── services/
 │   └── weatherService.js        ALL API calls + the weather code table
 ├── utils/
-│   └── weatherRecommendation.js turns weather into one piece of advice
+│   ├── weatherRecommendation.js turns weather into one piece of advice
+│   └── weatherTheme.js          the colours used by the weather page
 ├── App.jsx                      the two routes
 ├── main.jsx                     starts React
-└── index.css                    fonts, background, shared button classes
+└── index.css                    fonts, background, shared classes
 ```
 
 | Folder | Responsible for |
@@ -244,6 +317,7 @@ src/
 | `pages/` | One file per screen (`/` and `/weather`) |
 | `services/` | Talking to the outside world — this is the only place with `fetch` |
 | `utils/` | Plain logic with no API calls and no interface |
+| `public/` | Files served as they are, such as the animation JSON |
 
 ## How the Application Works
 
@@ -266,7 +340,8 @@ Open-Meteo returns JSON (temperature, humidity, weather_code, ...)
         ↓
 weather_code is converted with WMO_CODES → condition, label, icon
         ↓
-WeatherCard shows the weather
+WeatherCard shows the numbers (left column)
+WeatherScene draws the matching animation (right column)
 RecommendationCard shows the suggestion
 ```
 

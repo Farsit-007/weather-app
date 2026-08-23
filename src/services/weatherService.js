@@ -26,7 +26,8 @@
  *                 (see utils/weatherRecommendation.js)
  *   description - the exact meaning of the code, shown as small text
  *   label       - a short friendly headline, shown under the temperature
- *   icon        - which icon to draw (see components/WeatherIcon.jsx)
+ *   icon        - which picture to draw and which colours to use
+ *                 (see components/WeatherScene.jsx and utils/weatherTheme.js)
  *
  * Several codes share a label on purpose: 61 ("Slight rain") and 65 ("Heavy
  * rain") are both just "Rain" to the user, but their descriptions differ.
@@ -131,6 +132,8 @@ export async function getCoordinatesByCity(city) {
  *     weather_code          the WMO code translated by WMO_CODES above
  *     is_day                1 during daylight, 0 at night
  *
+ * The response also carries `time`, the local time the values were measured.
+ *
  * Returns one flat object that the components can display directly. Rounding
  * happens here so the components only have to print the numbers.
  */
@@ -157,6 +160,8 @@ export async function getWeatherByCoordinates(lat, lon) {
     feelsLike: Math.round(now.apparent_temperature),
     humidity: now.relative_humidity_2m,
     windSpeed: Math.round(now.wind_speed_10m),
+    // "2026-08-23T14:32" -> "14:32", the local time of that place.
+    updatedAt: now.time ? now.time.slice(11, 16) : "",
     condition: weather.condition,
     description: weather.description,
     conditionLabel: weather.label,
