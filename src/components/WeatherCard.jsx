@@ -2,25 +2,6 @@ import { Thermometer, Droplet, Wind, MapPin } from "lucide-react";
 import { getWeatherTheme } from "../utils/weatherTheme";
 
 /*
-  One of the three small boxes at the bottom of the card (feels like, humidity,
-  wind). Written once and reused three times, so the layout classes only exist
-  in a single place.
-*/
-function Stat({ icon: Icon, label, value }) {
-  return (
-    <div className="flex items-center gap-3 bg-[#f7fafe] border border-line rounded-[18px] px-4 py-[14px] transition-colors hover:bg-sky-soft hover:border-sky-light">
-      <span className="inline-flex items-center justify-center w-[34px] h-[34px] rounded-[11px] bg-sky-soft text-sky-deep flex-shrink-0">
-        <Icon size={17} strokeWidth={2.25} />
-      </span>
-      <div className="min-w-0">
-        <span className="block text-[11.5px] font-semibold text-slate">{label}</span>
-        <span className="block text-[16px] font-bold leading-tight">{value}</span>
-      </div>
-    </div>
-  );
-}
-
-/*
   The left column of the weather page: where you are, how warm it is and the
   three numbers underneath. The picture of the weather is drawn next to it by
   WeatherScene.
@@ -29,6 +10,13 @@ export default function WeatherCard({ locationName, weather }) {
   // The colours of this weather. `strong` is the darker one, the only one that
   // stays readable on a white card. See utils/weatherTheme.js.
   const theme = getWeatherTheme(weather.icon);
+
+  // The three small boxes at the bottom (feels like, humidity, wind).
+  const stats = [
+    { icon: Thermometer, label: "Feels like", value: `${weather.feelsLike}°C` },
+    { icon: Droplet, label: "Humidity", value: `${weather.humidity}%` },
+    { icon: Wind, label: "Wind speed", value: `${weather.windSpeed} km/h` },
+  ];
 
   return (
     <section className="card relative overflow-hidden p-8 max-[480px]:p-6 animate-rise">
@@ -64,9 +52,20 @@ export default function WeatherCard({ locationName, weather }) {
         </div>
 
         <div className="grid grid-cols-3 gap-3 max-[560px]:grid-cols-1">
-          <Stat icon={Thermometer} label="Feels like" value={`${weather.feelsLike}°C`} />
-          <Stat icon={Droplet} label="Humidity" value={`${weather.humidity}%`} />
-          <Stat icon={Wind} label="Wind speed" value={`${weather.windSpeed} km/h`} />
+          {stats.map(({ icon: Icon, label, value }) => (
+            <div
+              key={label}
+              className="flex items-center gap-3 bg-[#f7fafe] border border-line rounded-[18px] px-4 py-[14px] transition-colors hover:bg-sky-soft hover:border-sky-light"
+            >
+              <span className="inline-flex items-center justify-center w-[34px] h-[34px] rounded-[11px] bg-sky-soft text-sky-deep flex-shrink-0">
+                <Icon size={17} strokeWidth={2.25} />
+              </span>
+              <div className="min-w-0">
+                <span className="block text-[11.5px] font-semibold text-slate">{label}</span>
+                <span className="block text-[16px] font-bold leading-tight">{value}</span>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>

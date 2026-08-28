@@ -14,14 +14,21 @@ import { getWeatherRecommendation } from "../utils/weatherRecommendation";
 
   The chosen place is passed here by LocationModal through the router:
   navigate("/weather", { state: { location } }). We read it back with
-  useLocation() and hand it to WeatherResult below, which asks the API for that
-  location's weather.
+  useLocation() and ask the API for that location's weather.
 
   When the weather arrives the page is shown in two columns: the numbers on the
   left, the animation of the sky on the right. On a phone the two columns simply
   sit on top of each other.
+
+  The `key` is the interesting part. React Router gives every navigation its own
+  key, so when the user picks another city React builds a brand new component
+  instead of reusing the old one. That resets `weather`, `loading` and `error`
+  for free — no code needed to clear them.
 */
-function WeatherResult({ place }) {
+export default function Weather() {
+  const routerLocation = useLocation();
+  const place = routerLocation.state?.location;
+
   // The weather data from the API, or null while we don't have it yet.
   const [weather, setWeather] = useState(null);
   // True while the request is running, so we can show the loading message.
@@ -143,19 +150,4 @@ function WeatherResult({ place }) {
       {modalOpen && <LocationModal onClose={() => setModalOpen(false)} />}
     </main>
   );
-}
-
-/*
-  The page itself is only two lines: it reads the chosen place out of the router
-  and passes it down.
-
-  The `key` is the interesting part. React Router gives every navigation its own
-  key, so when the user picks another city React builds a brand new
-  WeatherResult instead of reusing the old one. That resets `weather`, `loading`
-  and `error` for free — no code needed to clear them.
-*/
-export default function Weather() {
-  const routerLocation = useLocation();
-
-  return <WeatherResult key={routerLocation.key} place={routerLocation.state?.location} />;
 }

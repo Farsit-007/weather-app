@@ -31,7 +31,10 @@ export default function LocationModal({ onClose }) {
   const [error, setError] = useState("");
 
   // Go to the result page and hand the chosen place over in the router state.
+  // Close the modal first so the popup disappears even when we are already
+  // on /weather (same-route navigation would otherwise keep the modal open).
   const goToWeather = (location) => {
+    onClose();
     navigate("/weather", { state: { location } });
   };
 
@@ -100,7 +103,7 @@ export default function LocationModal({ onClose }) {
     // Dimmed background. Clicking it closes the popup.
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-5 bg-[rgba(12,24,48,0.55)] backdrop-blur-sm animate-fade-in"
-      onClick={onClose}
+      onClick={() => onClose()}
     >
       {/* stopPropagation keeps clicks inside the white box from closing it. */}
       <div
@@ -118,7 +121,10 @@ export default function LocationModal({ onClose }) {
         <button
           type="button"
           className="absolute top-4 right-4 flex items-center justify-center w-[34px] h-[34px] border-none rounded-full bg-sky-soft text-navy-soft cursor-pointer transition-colors hover:bg-sky-light"
-          onClick={onClose}
+          onClick={(event) => {
+            event.stopPropagation();
+            onClose();
+          }}
           aria-label="Close"
         >
           <X size={18} strokeWidth={2.25} />

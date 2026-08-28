@@ -1,14 +1,9 @@
 import WeatherLottie from "./WeatherLottie";
 
 /*
-  Colours of the suggestion card, one entry per suggestion type. The types come
-  from getWeatherRecommendation() in utils/weatherRecommendation.js.
-
-    color - the label pill and the left border of the card
-    card  - the background gradient (defined in tailwind.config.js)
-
-  The animation does not need an entry here: public/animations/advice holds one
-  file per type, so the type name is enough to find it.
+  Colours of the suggestion card, one entry per suggestion type.
+  The animation lives at public/animations/advice/<type>.json, so the type name
+  alone is enough to find it.
 */
 const REC_STYLES = {
   hot: { color: "#f97316", card: "bg-rec-hot" },
@@ -22,12 +17,6 @@ const REC_STYLES = {
   pleasant: { color: "#22c55e", card: "bg-rec-pleasant" },
 };
 
-// The classes every suggestion card shares. Only the colours above change.
-const CARD_CLASSES =
-  "flex items-start gap-[18px] w-full rounded-card border-l-[5px] border-solid shadow-md-soft " +
-  "p-7 max-[480px]:p-5 transition-transform duration-200 hover:-translate-y-1 " +
-  "animate-rise [animation-delay:160ms]";
-
 // Shows the one-line advice under the weather card, e.g. "take an umbrella".
 export default function RecommendationCard({ recommendation }) {
   // Nothing to show if there is no weather yet.
@@ -37,7 +26,7 @@ export default function RecommendationCard({ recommendation }) {
 
   return (
     <section
-      className={`${CARD_CLASSES} ${style.card}`}
+      className={`flex items-start gap-[18px] w-full rounded-card border-l-[5px] border-solid shadow-md-soft p-7 max-[480px]:p-5 transition-transform duration-200 hover:-translate-y-1 animate-rise [animation-delay:160ms] ${style.card}`}
       style={{ borderLeftColor: style.color }}
     >
       <span className="inline-flex items-center justify-center w-[64px] h-[64px] rounded-[20px] bg-white/90 ring-1 ring-white shadow-sm-soft flex-shrink-0">

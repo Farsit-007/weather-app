@@ -3,23 +3,6 @@ import WeatherLottie from "./WeatherLottie";
 import { getWeatherTheme } from "../utils/weatherTheme";
 
 /*
-  One of the two small facts printed under the animation. Written once and used
-  twice, so its styling lives in a single place. The colours are passed in
-  because they change with the weather.
-*/
-function SceneChip({ icon: Icon, children, theme }) {
-  return (
-    <span
-      className="inline-flex items-center gap-2 text-[13px] font-semibold rounded-full px-[14px] py-2"
-      style={{ background: theme.chip, color: theme.ink }}
-    >
-      <Icon size={15} strokeWidth={2.5} />
-      {children}
-    </span>
-  );
-}
-
-/*
   The right column of the weather page: a coloured sky panel with the matching
   Lottie animation playing inside it.
 
@@ -30,6 +13,10 @@ export default function WeatherScene({ weather, locationName }) {
   // Sky gradient, text colours and the accent used for the glow. See
   // utils/weatherTheme.js.
   const theme = getWeatherTheme(weather.icon);
+
+  // The two small facts printed under the animation.
+  const chipClass =
+    "inline-flex items-center gap-2 text-[13px] font-semibold rounded-full px-[14px] py-2";
 
   return (
     <section
@@ -71,15 +58,17 @@ export default function WeatherScene({ weather, locationName }) {
         </p>
 
         <div className="flex flex-wrap justify-center gap-2">
-          <SceneChip icon={Thermometer} theme={theme}>
+          <span className={chipClass} style={{ background: theme.chip, color: theme.ink }}>
+            <Thermometer size={15} strokeWidth={2.5} />
             Feels like {weather.feelsLike}°C
-          </SceneChip>
+          </span>
           {/* The API only sends a time when it has one, so the chip is only
               shown when we actually got one. */}
           {weather.updatedAt && (
-            <SceneChip icon={Clock} theme={theme}>
+            <span className={chipClass} style={{ background: theme.chip, color: theme.ink }}>
+              <Clock size={15} strokeWidth={2.5} />
               Updated {weather.updatedAt}
-            </SceneChip>
+            </span>
           )}
         </div>
       </div>
