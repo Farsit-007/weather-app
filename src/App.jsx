@@ -1,6 +1,6 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "./pages/Home";
-import Weather from "./pages/Weather";
+import AWeather from "./template/Weather";
 
 /*
   The app has just two pages:
@@ -10,7 +10,7 @@ import Weather from "./pages/Weather";
 */
 const router = createBrowserRouter([
   { path: "/", element: <Home /> },
-  { path: "/weather", element: <Weather /> },
+  { path: "/weather", element: <AWeather /> },
 ]);
 
 export default function App() {
